@@ -19,18 +19,27 @@ function App() {
     }
   };
 
+  // Fetch list of Pokémon from PokeAPI
+  useEffect(() => {
+    fetchPokeDb();
+  }, []);
+
   const fetchRandomPokes = async () => {
-    var pokemonList = [];
-    var pokemon = null;
     if (!pokeDb) return;
-    while (pokemonList.length < 18) {
+
+    const pokemonList = [];
+    const indices = new Set();
+
+    while (pokemonList.length < 12) {
       const index = Math.floor(Math.random() * 151);
-      try {
-        const response = await fetch(pokeDb.results[index].url);
-        pokemon = await response.json();
-        pokemonList.push(pokemon);
-      } catch (error) {
-        console.error("Error fetching Pokémon: ", error);
+      if (!indices.has(index)) {
+        try {
+          const response = await fetch(pokeDb.results[index].url);
+          const pokemonData = await response.json();
+          pokemonList.push(pokemonData);
+        } catch (error) {
+          console.error("Error fetching Pokémon: ", error);
+        }
       }
     }
     setPokemon(pokemonList);
@@ -52,15 +61,10 @@ function App() {
     );
   };
 
-  // Fetch list of Pokémon from PokeAPI
-  useEffect(() => {
-    fetchPokeDb();
-  }, []);
-
   return (
     <>
       <h1>Pokememory!</h1>
-      <button onClick={fetchRandomPokes}>Show me a Pokémon!</button>
+      <button onClick={fetchRandomPokes}>Show me Pokémon!</button>
       <div>{createPokeGrid()}</div>
     </>
   );

@@ -40,14 +40,17 @@
 .card {
     border: 1px solid #ccc;
     border-radius: 8px;
-    padding: 1em;
+    padding: 0em 1em;
     text-align: center;
     background-color: #f9f9f9;
+}
+.card:hover {
+    background-color: #ffffff;
 }
 
 .pokemon-grid-container {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     padding: 10px;
 }
