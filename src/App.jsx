@@ -19,10 +19,13 @@ function App() {
       console.log("Error fetching Pokémon DB: ", error);
     }
   };
+  // Fetch list of Pokémon from PokeAPI
+  useEffect(() => {
+    fetchPokeDb();
+  }, []);
 
   const fetchRandomPokes = async () => {
     if (!pokeDb) return console.error("No DB found.");
-    console.log("There should be a DB?");
     const pokemonList = [];
     const indices = new Set();
 
@@ -42,35 +45,17 @@ function App() {
     setPokemon(pokemonList);
   };
 
-  // Fetch list of Pokémon from PokeAPI
   useEffect(() => {
-    fetchPokeDb();
-  }, []);
-
-  useEffect(() => {
-    setPokemon([]);
     if (pokemon.length > 0) {
-      var intermediate = new Array();
+      const intermediate = [];
       pokemon.forEach((poke) => {
-        if (intermediate.length == 0) {
-          intermediate.push(poke);
-          intermediate.push(poke);
-        } else {
-          var index = Math.floor(Math.random() * intermediate.length);
-          intermediate = [
-            ...intermediate.slice(0, index),
-            poke,
-            ...intermediate.slice(index),
-          ];
-          index = Math.floor(Math.random() * intermediate.length);
-          intermediate = [
-            ...intermediate.slice(0, index),
-            poke,
-            ...intermediate.slice(index),
-          ];
-        }
+        intermediate.push(poke, poke);
       });
-      setScrambledPokeList([...intermediate]);
+      for (let i = intermediate.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [intermediate[i], intermediate[j]] = [intermediate[j], intermediate[i]];
+      }
+      setScrambledPokeList(intermediate);
     }
   }, [pokemon]);
 
@@ -78,7 +63,6 @@ function App() {
     if (loading) {
       return <div>Loading...</div>;
     }
-
     return (
       <div className="pokemon-grid-container">
         {scrambledPokeList.map((poke, index) => (
