@@ -37,8 +37,32 @@
     }
 }
 
+.game-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
 .card {
     border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0em 1em;
+    text-align: center;
+    background-color: #f9f9f9;
+    transition: transform 0.2s;
+}
+.card.active {
+    transform: scale(1.1);
+}
+.card:red {
+    border: 1px solid #red;
+    border-radius: 8px;
+    padding: 0em 1em;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+.card:blue {
+    border: 1px solid #blue;
     border-radius: 8px;
     padding: 0em 1em;
     text-align: center;
@@ -55,6 +79,19 @@
     padding: 10px;
 }
 
-.read-the-docs {
-    color: #888;
+.player-card-blue {
+    border: 1px solid blue;
+    border-radius: 8px;
+    padding: 0em 1em;
+    margin: 0em 2em;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+.player-card-red {
+    border: 1px solid red;
+    border-radius: 8px;
+    padding: 0em 1em;
+    margin: 0em 2em;
+    text-align: center;
+    background-color: #f9f9f9;
 }

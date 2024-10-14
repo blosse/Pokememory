@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 
 const GenerateGrid = ({ pokeDB }) => {
-  console.log("Pokemon DB:", pokeDB);
   const [pokemon, setPokemon] = useState([]);
   const [scrambledPokeList, setScrambledPokeList] = useState([]);
+  const [activeCardIndex, setActiveCardIndex] = useState(null);
 
   useEffect(() => {
     const fetchRandomPokes = async () => {
@@ -21,7 +21,6 @@ const GenerateGrid = ({ pokeDB }) => {
         if (!indices.has(index)) {
           indices.add(index);
           try {
-            console.log("Fetching URL:", pokeDB[index].url);
             const response = await fetch(pokeDB[index].url);
             const pokemonData = await response.json();
             pokemonList.push(pokemonData);
@@ -50,10 +49,22 @@ const GenerateGrid = ({ pokeDB }) => {
     }
   }, [pokemon]);
 
+  const selectCard = (index) => {
+    if (activeCardIndex === index) {
+      setActiveCardIndex(null);
+    } else {
+      setActiveCardIndex(index);
+    }
+  };
+
   return (
     <div className="pokemon-grid-container">
       {scrambledPokeList.map((poke, index) => (
-        <div key={`${poke.name}-${index}`} className="card">
+        <div
+          key={`${poke.name}-${index}`}
+          className={`card ${activeCardIndex === index ? "active" : ""}`}
+          onClick={() => selectCard(index)}
+        >
           <h3>{poke.name}</h3>
           <img src={poke.sprites.front_default} alt={poke.name} />
         </div>
