@@ -4,7 +4,7 @@ import { useGameState } from "./GameState";
 
 const PlayerCard = ({ pokeDB, pokeNR, player }) => {
   const [pokemonImg, setPokemonImg] = useState(null);
-  const { gameState, switchturn, updateScore, resetGame } = useGameState();
+  const { gameState, switchTurn, updateScore, resetGame } = useGameState();
   // Fetch pokemon profile pic
   const fetchPokeImg = async () => {
     try {
@@ -17,21 +17,17 @@ const PlayerCard = ({ pokeDB, pokeNR, player }) => {
   };
   fetchPokeImg();
 
-  // This is prob a pretty stupid way of doing this
-  var playerColor = "player-card-blue";
-  var playerScore = gameState.score.blue;
-  var playerNr = 2;
-  if (player == "red") {
-    playerColor = "player-card-red";
-    playerScore = gameState.score.red;
-    playerNr = 1;
-  }
-
   return (
-    <div className={playerColor}>
+    <div
+      className={
+        gameState.currentPlayer === player
+          ? `player-${player} active`
+          : `player-${player}`
+      }
+    >
       <img src={pokemonImg} />
-      <h2>Player {playerNr}</h2>
-      <h1>{playerScore}</h1>
+      <h2>Player {player === "red" ? 1 : 2}</h2>
+      <h1>{gameState.score[player]}</h1>
     </div>
   );
 };

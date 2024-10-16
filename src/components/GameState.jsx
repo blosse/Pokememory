@@ -15,6 +15,7 @@ export const GameStateProvider = ({ children }) => {
       ...prevState,
       currentPlayer: prevState.currentPlayer === "red" ? "blue" : "red",
     }));
+    console.log(`It is now ${gameState.currentPlayer}'s turn!`);
   };
 
   const updateScore = (player, points) => {
