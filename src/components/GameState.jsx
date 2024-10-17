@@ -21,7 +21,7 @@ export const GameStateProvider = ({ children }) => {
   const updateScore = (player, points) => {
     setGameState((prevState) => ({
       ...prevState,
-      score: { ...prevState.score, [player]: prevState.score + points },
+      score: { ...prevState.score, [player]: prevState.score[player] + points },
     }));
   };
 

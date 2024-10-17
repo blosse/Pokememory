@@ -21,32 +21,24 @@
     opacity: 0;
     transition: 0.5s;
 }
-
-@keyframes logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    a:nth-of-type(2) .logo {
-        animation: logo-spin infinite 20s linear;
-    }
-}
-
 .game-container {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+    gap: 16px;
+}
+.pokemon-grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    padding: 10px;
 }
 .card {
     border: 1px solid #ccc;
     border-radius: 8px;
     min-width: 140px;
+    height: auto;
     padding: 0em 1em;
     text-align: center;
     background-color: #f9f9f9;
@@ -56,7 +48,7 @@
     transform: scale(1.08);
 }
 .card.red {
-    border-color: 1px solid red;
+    border: 1px solid red;
 }
 .card.blue {
     border: 1px solid blue;
@@ -64,19 +56,36 @@
 .card:hover {
     background-color: #ffffff;
 }
-
-.pokemon-grid-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    padding: 10px;
+.card-image-container {
+    position: relative;
+    width: 140px;
+    height: 100px;
 }
-
+.unown-image {
+    position: absolute;
+    top: 0;
+    left: 22px;
+    scale: 1.2;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+.unown-image.active {
+    opacity: 0;
+}
+.poke-image {
+    position: absolute;
+    top: 0;
+    left: 22px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.poke-image.active {
+    opacity: 1;
+}
 .player-blue {
     border: 1px solid blue;
     border-radius: 8px;
     padding: 0em 1em;
-    margin: 0em 2em;
     text-align: center;
     background-color: #f9f9f9;
 }
@@ -98,7 +107,6 @@
     border: 1px solid red;
     border-radius: 8px;
     padding: 0em 1em;
-    margin: 0em 2em;
     text-align: center;
     background-color: #f9f9f9;
 }

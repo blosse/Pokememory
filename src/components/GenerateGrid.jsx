@@ -1,5 +1,5 @@
 // Component for generating the Pokemon grid
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGameState } from "./GameState";
 
 const GenerateGrid = ({ pokeDB }) => {
@@ -12,8 +12,11 @@ const GenerateGrid = ({ pokeDB }) => {
   const [activeCardPokemon2, setActiveCardPokemon2] = useState(null);
   const [correctGuessesRed, setCorrectGuessesRed] = useState([]);
   const [correctGuessesBlue, setCorrectGuessesBlue] = useState([]);
+  const [deselectCardsCount, setDeselectCardsCount] = useState(0);
+  var correctGuess = useRef(false);
+  var turnCompleted = useRef(false);
   const { gameState, switchTurn, updateScore, resetGame } = useGameState();
-  const gridSize = 6;
+  const gridSize = 9;
 
   const cache = {};
 
@@ -98,6 +101,8 @@ const GenerateGrid = ({ pokeDB }) => {
 
   // This is gonna be a beast
   const selectCard = (index, poke) => {
+    document.getElementById(`${poke}-image-${index}`).classList.add("active");
+    document.getElementById(`unown-image-${index}`).classList.add("active");
     if (
       correctGuessesRed.includes(index) ||
       correctGuessesBlue.includes(index)
@@ -107,6 +112,7 @@ const GenerateGrid = ({ pokeDB }) => {
     }
     // Nothing is selected -> set 1st card
     if (activeCardIndex1 === null) {
+      console.log("First card: ", poke);
       setActiveCardIndex1(index);
       setActiveCardPokemon1(poke);
     }
@@ -117,6 +123,7 @@ const GenerateGrid = ({ pokeDB }) => {
     }
     // Select 2nd card
     else {
+      console.log("Second card: ", poke);
       setActiveCardPokemon2(poke);
       setActiveCardIndex2(index);
     }
@@ -127,7 +134,9 @@ const GenerateGrid = ({ pokeDB }) => {
     if (activeCardPokemon1 && activeCardPokemon2) {
       if (activeCardPokemon1 === activeCardPokemon2) {
         console.log("Parabenz! Score for player ", gameState.currentPlayer);
-        gameState.score[gameState.currentPlayer]++;
+        correctGuess.current = true;
+        updateScore(gameState.currentPlayer, 1);
+        setDeselectCardsCount(deselectCardsCount + 1);
         if (gameState.currentPlayer === "red") {
           setCorrectGuessesRed((prev) => [
             ...prev,
@@ -141,22 +150,43 @@ const GenerateGrid = ({ pokeDB }) => {
             activeCardIndex2,
           ]);
         }
+      } else {
+        // Only switch turn on incorrect guess
+        switchTurn();
       }
-      const timeout = setTimeout(() => {
-        deselectCards();
-      }, 1800);
-      return () => clearTimeout(timeout);
+      turnCompleted.current = true;
     }
   }, [activeCardPokemon1, activeCardPokemon2]);
 
-  const deselectCards = () => {
-    console.log(activeCardPokemon1, activeCardPokemon2);
-    setActiveCardIndex1(null);
-    setActiveCardIndex2(null);
-    setActiveCardPokemon1(null);
-    setActiveCardPokemon2(null);
-    switchTurn();
-  };
+  useEffect(() => {
+    const deselectCards = () => {
+      if (turnCompleted.current) {
+        console.log("Deselect: ", activeCardPokemon1, activeCardPokemon2);
+        if (!correctGuess.current) {
+          console.log("Incorrect switching turns!");
+          document
+            .getElementById(`${activeCardPokemon1}-image-${activeCardIndex1}`)
+            .classList.remove("active");
+          document
+            .getElementById(`${activeCardPokemon2}-image-${activeCardIndex2}`)
+            .classList.remove("active");
+          document
+            .getElementById(`unown-image-${activeCardIndex1}`)
+            .classList.remove("active");
+          document
+            .getElementById(`unown-image-${activeCardIndex2}`)
+            .classList.remove("active");
+        }
+        setActiveCardIndex1(null);
+        setActiveCardIndex2(null);
+        setActiveCardPokemon1(null);
+        setActiveCardPokemon2(null);
+        correctGuess.current = false;
+        turnCompleted.current = false;
+      }
+    };
+    deselectCards();
+  }, [deselectCardsCount]);
 
   const setCardClassName = (index) => {
     if (correctGuessesBlue.includes(index)) {
@@ -176,27 +206,45 @@ const GenerateGrid = ({ pokeDB }) => {
   };
 
   return (
-    <div className="pokemon-grid-container">
+    <div
+      className="pokemon-grid-container"
+      onClick={() =>
+        turnCompleted.current
+          ? setDeselectCardsCount(deselectCardsCount + 1)
+          : null
+      }
+    >
       {scrambledPokeList.map((poke, index) => (
         <div
           key={`${poke.name}-${index}`}
           id={poke.name}
           className={setCardClassName(index)}
-          onClick={() => selectCard(index, poke.name)}
+          onClick={() =>
+            !turnCompleted.current ? selectCard(index, poke.name) : null
+          }
         >
           <h3>
-            {activeCardIndex1 === index || activeCardIndex2 === index
+            {activeCardIndex1 === index ||
+            activeCardIndex2 === index ||
+            correctGuessesRed.includes(index) ||
+            correctGuessesBlue.includes(index)
               ? poke.name
-              : "???"}
+              : "????"}
           </h3>
-          <img
-            src={
-              activeCardIndex1 === index || activeCardIndex2 === index
-                ? poke.sprites.front_default
-                : unown[index]
-            }
-            alt={poke.name}
-          />
+          <div className="card-image-container">
+            <img
+              id={`unown-image-${index}`}
+              className="unown-image"
+              src={unown[index]}
+              alt={poke.name}
+            />
+            <img
+              id={`${poke.name}-image-${index}`}
+              className="poke-image"
+              src={poke.sprites.front_default}
+              alt={poke.name}
+            />
+          </div>
         </div>
       ))}
     </div>
